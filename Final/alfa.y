@@ -19,8 +19,19 @@
 	int longitud;
 	int tamanio_vector_actual
 
+	INFO_SIMBOLO* simbolo;
 
-	int control_retorno
+	INFO_SIMBOLO insertar;
+
+
+
+	/*REVISAR PONER ALGUNOS SOLO A 1*/
+	int control_retorno=0;
+	int contador_not=0;
+	int contador_cmp=0;
+        int contador_cond=0;
+	int contador_bucle=0;
+	int parametros=0;
 
 	TablaHash tablaGlobal = NULL;
 	TablaHash tablaLocal = NULL;
@@ -113,7 +124,7 @@
 programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA {
 				fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
 				fprintf( yyout, ";escribir_fin\n" );
-        escribir_fin( yyout );
+       				escribir_fin( yyout );
 				}
 ;
 
@@ -128,7 +139,7 @@ escritura1: {
 						}
   ;
 escritura2: {
-							fprintf( yyout, ";escribir_inicio_main\n" );
+	      fprintf( yyout, ";escribir_inicio_main\n" );
               escribir_inicio_main( yyout );
 }
 	;
@@ -219,7 +230,7 @@ funciones: funcion funciones {
 
 
 fn_name : TOK_FUNCTION tipo TOK_IDENTIFICADOR {
-    hay_return = 0;
+    control_retorno = 0;
     es_funcion=1;
     simbolo = BuscarSimbolo($3.nombre);
     if(simbolo != NULL) {
@@ -235,7 +246,7 @@ fn_name : TOK_FUNCTION tipo TOK_IDENTIFICADOR {
     strcpy($$.nombre, $3.nombre);
     $$.tipo = tipo_actual;
 
-    DeclararFuncion($3.nombre, &inserta);
+    DeclararFuncion($3.nombre, &insertar);
     num_variables_locales_actual=0;
     pos_variable_local_actual=1;   /*cambiar a 0 alomejor*/
     num_parametros_actual = 0;
@@ -258,7 +269,7 @@ fn_declaration : fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTES
     declarar_funcion(out, $1.nombre, num_variables_locales_actual);
 };
 /*REGLA PR 22*/
-/*
+
 funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
   if(control_retorno==0) {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Funcion %s sin sentencia de retorno.\n", linea, $1.nombre);
@@ -268,16 +279,16 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
   fin_funcion(out);
   simbolo = BuscarSimbolo($1.nombre);
   if(simbolo == NULL) {
-      /* TODO *//*
+      /* TODO */
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Declaracion duplicada.\n", linea);
       return -1;
   }
   simbolo->adicional1 = num_parametros_actual;
   es_funcion = 0;
   fprintf(yyout, ";R22:\t<funcion> ::=function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");}
-*/
 
 
+/*
 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA {
 				fprintf(yyout, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");
 				if(flagretorno==0){
@@ -308,11 +319,12 @@ funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_func
 		  }
 		  flag_definicion_funcion = 0;
 
-				}
+				}*/
 ;
 
 
 /*REGLA PR 23,24*/
+
 parametros_funcion: parametro_funcion resto_parametros_funcion {
 				fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n");
 				}
@@ -345,14 +357,14 @@ parametro_funcion: tipo identificador {
 idpf : TOK_IDENTIFICADOR {
     simbolo = BuscarSimbolo($1.nombre);
     if(simbolo != NULL) {
-      fprintf(ERR_OUT, "****Error semantico en lin %ld: Declaracion duplicada.\n", linea);
+      fprintf(ERR_OUT, "****Error semantico en lin %ld: En declaracion\n", linea);
       return -1;
     }
-    inserta.lexema = $1.nombre;
-    inserta.categoria = PARAMETRO;
-    inserta.clase = ESCALAR;
-    inserta.tipo = tipo_actual;
-    inserta.adicional1 = num_parametros_actual;
+    insertar.lexema = $1.nombre;
+    insertar.categoria = PARAMETRO;
+    insertar.clase = ESCALAR;
+    insertar.tipo = tipo_actual;
+    insertar.adicional1 = num_parametros_actual;
 
     Declarar($1.nombre, &inserta);
 };
@@ -421,9 +433,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
 
         }
       if (UsoGlobal($1.nombre) == NULL) {
-      /* Estamos en una funcion y la variable es local */
         if(simbolo->categoria == PARAMETRO) {
-          // REVISAR
           asignar_local(yyout, (num_parametros_actual-simbolo->adicional1+1), $3.es_direccion?0:1);
         } else {
           asignar_local(yyout, -(simbolo->adicional1+1), $3.es_direccion?0:1);
@@ -483,7 +493,7 @@ if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIE
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Condicional con condicion de tipo int.\n", linea);
       return -1;
     }
-    $$.etiqueta = cuantos_condicionales++;
+    $$.etiqueta = contador_cond++;
     inicio_condicional(yyout, $3.es_direccion?0:1, $$.etiqueta);
   }
 	;
@@ -497,12 +507,14 @@ if_exp_sentencias:  if_exp sentencias {
 
 
 /*REGLA PR 52*/
-bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {fprintf(yyout, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
+bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+	etiqueta_final_while(out,$1.etiqueta);
+	fprintf(yyout, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
 ;
 
 
 while: TOK_WHILE TOK_PARENTESISIZQUIERDO {
-  $$.etiqueta = cuantos_bucles++;
+  $$.etiqueta = contador_bucle++;
   etiqueta_inicio_while(yyout, $$.etiqueta);
 }
 ;
@@ -545,12 +557,12 @@ escritura: TOK_PRINTF exp {
 
 /*REGLA PR 61*/
 retorno_funcion: TOK_RETURN exp {
-  if(!es_funcion) {
+  if(es_funcion==0) {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Sentencia de retorno fuera del cuerpo de una funcion.\n", linea);
     return -1;
   }
 
-  hay_return = 1;
+  control_retorno = 1;
   retorno_funcion(out, $2.es_direccion?0:1);
   fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");
 	}
@@ -570,7 +582,7 @@ exp: exp TOK_MAS exp {
 }
 
    | exp TOK_MENOS exp {
-  if($1.tipo!=ENTERO || $3.tipo != ENTERO) {
+  if($1.tipo!=ENTERO || $3.tipo != ENTERO) {    /* no podemos restar no enteros */
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
     return -1;
   }
@@ -592,7 +604,7 @@ exp: exp TOK_MAS exp {
     fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n");
 }
 
-   | exp TOK_ASTERISCO exp {
+   | exp TOK_ASTERISCO exp {   /*MULTIPLICAR*/
   if($1.tipo!=ENTERO || $3.tipo != ENTERO) {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
     return -1;
@@ -614,12 +626,12 @@ exp: exp TOK_MAS exp {
     fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n");
 }
    | exp TOK_AND exp {
-    if($1.tipo!=BOOLEANO || $3.tipo != BOOLEANO) {
+    if($1.tipo!=BOOLEANO || $3.tipo != BOOLEANO) {    /*AND solo booleanos*/
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion logica con operandos int.\n", linea);
       return -1;
     }
     $$.tipo = BOOLEANO;
-    y(out, $1.es_direccion?0:1, $3.es_direccion?0:1);
+    y(yyout, $1.es_direccion?0:1, $3.es_direccion?0:1);
     $$.es_direccion = 0;
     fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n");
 }
@@ -640,7 +652,8 @@ exp: exp TOK_MAS exp {
       return -1;
     }
     $$.tipo = BOOLEANO;
-    no(out, $2.es_direccion?0:1, cuantos_no++);
+    contador_not++;
+    no(out, $2.es_direccion?0:1, contador_not);
     $$.es_direccion = 0;
     fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n");
 }
@@ -666,7 +679,7 @@ exp: exp TOK_MAS exp {
         return -1;
     }
 
-    escribir_operando(out, $1.nombre, 1);
+    escribir_operando(yyout, $1.nombre, 1);
 
     }
     $$.es_direccion = 1;
@@ -686,7 +699,7 @@ exp: exp TOK_MAS exp {
     $$.es_direccion = $2.es_direccion;
     fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");
   }
-   | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {
+   | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {  /*comparaciones booleanas*/
     $$.tipo =BOOLEANO;
     $$.es_direccion = 0;
     fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");
@@ -706,7 +719,7 @@ exp: exp TOK_MAS exp {
       fprintf(ERR_OUT, "****Error semantico en lin %ld: El identificador no es una funcion (%s).\n", linea, $1.nombre);
       return -1;
     }
-    if(simbolo->adicional1 != params) {
+    if(simbolo->adicional1 != parametros) {
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Numero incorrecto de parametros en llamada a funcion.\n", linea);
       return -1;
     }
@@ -735,12 +748,12 @@ exp: exp TOK_MAS exp {fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");}
 ;*/
 
 call_func: TOK_IDENTIFICADOR TOK_PARENTESISIZQUIERDO {
-  if(es_llamada) {
+  if(es_llamada == 1) {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: No esta permitido el uso de llamadas a funciones como parametros de otras funciones.\n", linea);
     return -1;
   }
   es_llamada = 1;
-  params = 0;
+  parametros = 0;
   strcpy($$.nombre, $1.nombre);
 }
 ;
@@ -774,21 +787,23 @@ resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones {
 
 /*REGLA PR 93,94,95,96,97,98*/
 comparacion: exp TOK_IGUAL exp {
-  if($1.tipo != ENTERO || $3.tipo != ENTERO) {
-    fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
-    return -1;
-  }
-  igual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, cuantas_comparaciones++);
-  /*$$.tipo = BOOLEANO;
-  $$.es_direccion = 0;*/
-  fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
-}
+	  if($1.tipo != ENTERO || $3.tipo != ENTERO) {
+	    fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
+	    return -1;
+	  }
+          contador_cmp++;
+	  igual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
+	  /*$$.tipo = BOOLEANO;
+	  $$.es_direccion = 0;*/
+	  fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
+	}
            | exp TOK_DISTINTO exp {
             if($1.tipo != ENTERO || $3.tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
               return -1;
             }
-            distinto(out, $1.es_direccion?0:1, $3.es_direccion?0:1, cuantas_comparaciones++);
+	    contador_cmp++;
+            distinto(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n");
             }
            | exp TOK_MENORIGUAL exp {
@@ -796,28 +811,32 @@ comparacion: exp TOK_IGUAL exp {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
               return -1;
             }
-            menorigual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, cuantas_comparaciones++);
+            contador_cmp++;
+            menorigual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
            | exp TOK_MAYORIGUAL exp {
             if($1.tipo != ENTERO || $3.tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
               return -1;
             }
-            mayorigual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, cuantas_comparaciones++);
+	    contador_cmp++;
+            mayorigual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
            | exp TOK_MENOR exp {
             if($1.tipo != ENTERO || $3.tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
               return -1;
             }
-            menor(out, $1.es_direccion?0:1, $3.es_direccion?0:1, cuantas_comparaciones++);
+            contador_cmp++;
+            menor(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
            | exp TOK_MAYOR exp {
             if($1.tipo != ENTERO || $3.tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
               return -1;
             }
-            mayor(out, $1.es_direccion?0:1, $3.es_direccion?0:1, cuantas_comparaciones++);
+            contador_cmp++;
+            mayor(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
            ;
 
@@ -837,13 +856,13 @@ comparacion: exp TOK_IGUAL exp {fprintf(yyout, ";R93:\t<comparacion> ::= <exp> =
 constante: constante_logica {
 		fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");
 		$$.tipo = $1.tipo;
-    $$.es_direccion = $1.es_direccion;
+    $		$$.es_direccion = $1.es_direccion;
 		strcpy($$.nombre, $1.nombre);
 		}
 	| constante_entera {
 		fprintf(yyout, ";R100:\t<constante> ::= <constante_entera>\n");
 		$$.tipo = $1.tipo;
-    $$.es_direccion = $1.es_direccion;
+    		$$.es_direccion = $1.es_direccion;
 		strcpy($$.nombre, $1.nombre);
 		}
 ;
@@ -923,13 +942,13 @@ identificador: TOK_IDENTIFICADOR {
     Declarar($1.nombre, &inserta);
 
 
-    fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
+    fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
              ;
 
 /*
 escribirTabla: { /* Escribir tabla de simbolos a nasm */ escribir_segmento_codigo(out); }
 
- escribirMain: { escribir_inicio_main(out);}*/
+ escribirMain: { escribir_inicio_main(out);}
 %%
 
 void yyerror (char *s){
