@@ -20,11 +20,9 @@ INFO_SIMBOLO * UsoGlobal(const char * identificador);
 
 INFO_SIMBOLO * UsoLocal(const char * identificador);
 
-INFO_SIMBOLO * UsoExclusivoGlobal(char * identificador);
-
-INFO_SIMBOLO * UsoExclusivoLocal(char * identificador);
-
 STATUS DeclararFuncion(const char * identificador,INFO_SIMBOLO *is);
+
+int EsLocal(const char *id);
 
 STATUS CerrarFuncion();
 

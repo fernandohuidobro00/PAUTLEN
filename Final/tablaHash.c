@@ -32,7 +32,7 @@ INFO_SIMBOLO* crear_info_simbolo(const char* lexema, CATEGORIA categ, TIPO tipo,
         is->clase = clase;
         is->valor1 = adic1;
         is->valor2 = adic2;
-       // is->siguiente = NULL;
+       /* is->siguiente = NULL; */
     }
     return is;
 }
@@ -116,7 +116,7 @@ TABLA_HASH* crear_tabla(int tam)
             return NULL;
         }
         th->tam = tam;
-      //  th->simbolos = NULL;
+      /* th->simbolos = NULL; */
     }
     return th;
 }
@@ -240,8 +240,8 @@ STATUS insertar_simbolo(TABLA_HASH* th, const char* lexema, CATEGORIA categ, TIP
     th->tabla[ind] = n;
 
     /* Insertamos al inicio de la lista enlazada de todos los simbolos */
-   // is->siguiente = th->simbolos;
-    //th->simbolos = is;
+   /*is->siguiente = th->simbolos; */
+    /*th->simbolos = is; */
 
 
     return OK;
@@ -311,8 +311,10 @@ INFO_SIMBOLO* lista_simbolos(const TABLA_HASH* th)
  *     void.
  */
 void tabla_dump(const TABLA_HASH * th){
+	
+int i=0;
 
-     for (int i = 0; i < th->tam; ++i) {
+     for (i = 0; i < th->tam; ++i) {
         NODO_HASH *entry = th->tabla[i];
         NODO_HASH *aux_entry=NULL;
 

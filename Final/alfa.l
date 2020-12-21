@@ -2,8 +2,9 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
-    #include "y.tab.h"
     #include "alfa.h"
+    #include "y.tab.h"
+
 
     int linea = 1, columna = 1, error = 0;
 %}
@@ -67,29 +68,4 @@ false {columna+=yyleng; fprintf(yyout,";D:\t%s\n",yytext); return TOK_FALSE;}
 
 
 . {error=1; columna+=yyleng; fprintf(stdout,"Error morfologico en [lin %d, columna %d]: simbolo no permitido (%s)\n",linea,columna-yyleng,yytext); return TOK_ERROR;}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 %%

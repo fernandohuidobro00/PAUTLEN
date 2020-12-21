@@ -67,6 +67,17 @@ INFO_SIMBOLO * UsoGlobal(const char * id){
      
 }
 
+int EsLocal(const char *id) {
+    INFO_SIMBOLO *dato=NULL; 
+    if(tablaLocal == NULL) {
+        return 0;
+    }
+    dato=buscar_simbolo(tablaLocal, id);
+	
+    if (dato==NULL) return 0;
+
+    return dato;
+}
 INFO_SIMBOLO * UsoLocal(const char * id){
 
     INFO_SIMBOLO *dato = NULL;

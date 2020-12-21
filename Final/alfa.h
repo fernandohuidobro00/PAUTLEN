@@ -1,12 +1,7 @@
 #ifndef ALFA_H
 #define ALFA_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "tablaHash.h"
-#include "tablaSimbolos.h"
 #include "generacion.h"
 #define MAX_LONG_ID 100
 #define MAX_TAMANIO_VECTOR 64

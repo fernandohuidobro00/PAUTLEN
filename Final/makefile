@@ -1,9 +1,15 @@
 CC = gcc -ansi -pedantic
 CFLAGS = -g -Wall
-OBJECTS = lex.yy.o y.tab.o compilador.o tablahash.o generacion.o
+OBJECTS = lex.yy.o y.tab.o compilador.o tablaHash.o generacion.o tablaSimbolos.o
 
 all: $(OBJECTS)
-	$(CC) $(CFLAGS) -o final $(OBJECTS)
+	$(CC) $(CFLAGS) -o alfa $(OBJECTS)
+
+compilador.o: compilador.c y.tab.h
+	$(CC) $(CFLAGS) -c compilador.c
+
+generacion.o: generacion.c generacion.h
+	$(CC) $(CFLAGS) -c generacion.c
 
 lex.yy.c: alfa.l
 	flex alfa.l
@@ -17,17 +23,15 @@ y.tab.o: y.tab.c
 y.tab.h: alfa.y
 	bison -d -y -v alfa.y
 
-compilador.o: compilador.c y.tab.h
-	$(CC) $(CFLAGS) -c compilador.c
+
 
 tablaSimbolos.o: tablaSimbolos.c tablaSimbolos.h
 	$(CC) $(CFLAGS) -c tablaSimbolos.c
 
-tablahash.o: tablahash.c tablahash.h
-	$(CC) $(CFLAGS) -c tablahash.c
+tablahash.o: tablaHash.c tablaHash.h
+	$(CC) $(CFLAGS) -c tablaHash.c
 
-generacion.o: generacion.c generacion.h
-	$(CC) $(CFLAGS) -c generacion.c
+
 
 clean:
 	rm -rf alfa *.o lex.yy.c y.tab.c y.tab.h y.output
