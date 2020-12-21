@@ -289,10 +289,7 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
     return -1;
   }
   CerrarFuncion();
-	fprintf(yyout, "mov eax, 0\n");
-	fprintf(yyout, "mov esp, ebp\n"); 
-	fprintf(yyout, "pop ebp\n");
-	fprintf(yyout, "ret\n");
+  fin_funcion(yyout);
   simbolo = UsoLocal($1.lexema);
   if(simbolo == NULL) {
       /* TODO */
@@ -472,9 +469,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
 			fprintf(yyout, "mov eax, [eax]\n");
 		}
 
-		fprintf(yyout, "pop dword edx\n");
-
-		fprintf(yyout, "mov [edx], eax\n");
+		asignar_vector(yyout, $3.es_direccion?0:1);
             fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
           ;
 

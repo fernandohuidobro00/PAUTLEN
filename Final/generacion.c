@@ -656,6 +656,14 @@ void retornarFuncion(FILE * fpasm, int es_variable) {
 }
 
 
+void fin_funcion(FILE *fpasm){
+   fprintf(fpasm, "mov eax, 0\n");
+   fprintf(fpasm, "mov esp, ebp\n");
+   fprintf(fpasm, "pop ebp\n");
+   fprintf(fpasm, "ret\n");
+}
+
+
 void operandoEnPilaAArgumento(FILE * fpasm, int es_variable) {
   if(!fpasm || (es_variable!=0 && es_variable!=1)) {
     fprintf(stderr, "operandoEnPilaAArgumento\n");
