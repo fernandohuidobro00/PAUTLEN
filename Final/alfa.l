@@ -3,6 +3,7 @@
     #include <stdlib.h>
     #include <string.h>
     #include "y.tab.h"
+    #include "alfa.h"
 
     int linea = 1, columna = 1, error = 0;
 %}

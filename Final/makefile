@@ -20,6 +20,9 @@ y.tab.h: alfa.y
 compilador.o: compilador.c y.tab.h
 	$(CC) $(CFLAGS) -c compilador.c
 
+tablaSimbolos.o: tablaSimbolos.c tablaSimbolos.h
+	$(CC) $(CFLAGS) -c tablaSimbolos.c
+
 tablahash.o: tablahash.c tablahash.h
 	$(CC) $(CFLAGS) -c tablahash.c
 

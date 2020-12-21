@@ -1,9 +1,11 @@
-%{
+%{	
+	#include "alfa.h"
+	#include "tabla_simbolos.h"
+	#include "generacion.h"
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
-	#include "alfa.h"
-	#incluse "tabla_simbolos.h"
+	
 
 	void yyerror(char *s);
 	extern int yylex();
@@ -17,7 +19,7 @@
 	int clase_actual;
 
 	int longitud;
-	int tamanio_vector_actual
+	int tamanio_vector_actual;
 
 	INFO_SIMBOLO* simbolo;
 
@@ -38,11 +40,9 @@
 	tablaSimbolosAmbitos tabla;	/* Tabla de simbolos*/
 %}
 
-%union
-{
- tipo_atributos atributos;
+%union{
+	tipo_atributos atributos;
 }
-
 
 %token  TOK_MAIN
 %token  TOK_INT
@@ -266,7 +266,7 @@ fn_declaration : fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTES
     simbolo->adicional1 = num_parametros_actual;
     strcpy($$.nombre, $1.nombre);
     $$.tipo = $1.tipo;
-    declarar_funcion(out, $1.nombre, num_variables_locales_actual);
+    declararFuncion(out, $1.nombre, num_variables_locales_actual);
 };
 /*REGLA PR 22*/
 
@@ -276,7 +276,7 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
     return -1;
   }
   CerrarFuncion();
-  fin_funcion(out);
+  retornarFuncion(yyout);
   simbolo = BuscarSimbolo($1.nombre);
   if(simbolo == NULL) {
       /* TODO */
@@ -476,7 +476,7 @@ elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
 				 fprintf(ERR_OUT, "****Error semantico en lin %ld: El indice en una operacion de indexacion tiene que ser de tipo entero.\n", linea);
 				 return -1;
 			 }
-			 escribir_operando_array(out, $1.nombre, $3.es_direccion?0:1, simbolo->adicional1);
+			 escribir_elemento_vector(out, $1.nombre, $3.es_direccion, simbolo->adicional1);
 
 					  fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
 					               ;
@@ -494,28 +494,34 @@ if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIE
       return -1;
     }
     $$.etiqueta = contador_cond++;
-    inicio_condicional(yyout, $3.es_direccion?0:1, $$.etiqueta);
+    ifthen_inicio(yyout, $3.es_direccion, $$.etiqueta);
   }
 	;
 
 if_exp_sentencias:  if_exp sentencias {
 	 $$.etiqueta = $1.etiqueta;
-  sino_condicional(yyout, $$.etiqueta);
+  	ifthenelse_fin_then(yyout, $$.etiqueta);
 
 }
 ;
 
 
 /*REGLA PR 52*/
+/*
 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
-	etiqueta_final_while(out,$1.etiqueta);
+	while_fin(yyout,$1.etiqueta);
 	fprintf(yyout, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
-;
+;*/
+
+bucle: while_exp sentencias TOK_LLAVEDERECHA {
+  while_fin(out, $1.etiqueta);
+  fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
+     ;
 
 
 while: TOK_WHILE TOK_PARENTESISIZQUIERDO {
   $$.etiqueta = contador_bucle++;
-  etiqueta_inicio_while(yyout, $$.etiqueta);
+  while_inicio(yyout, $$.etiqueta);
 }
 ;
 
@@ -525,9 +531,10 @@ while_exp: while exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Bucle con condicion de tipo int.\n", linea);
     return -1;
   }
-
+  
   $$.etiqueta = $1.etiqueta;
-  inicio_bucle(yyout, $2.es_direccion?0:1, $$.etiqueta);
+  while_exp_pila(yyout, $2.es_direccion, $1.etiqueta)
+	
 };
 
 /*REGLA PR 54*/
@@ -563,7 +570,7 @@ retorno_funcion: TOK_RETURN exp {
   }
 
   control_retorno = 1;
-  retorno_funcion(out, $2.es_direccion?0:1);
+  retornar_funcion(out, $2.es_direccion);
   fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");
 	}
 ;
@@ -574,7 +581,7 @@ exp: exp TOK_MAS exp {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
     return -1;
   }
-  sumar(out, $1.es_direccion?0:1, $3.es_direccion?0:1);
+  sumar(yyout, $1.es_direccion?0:1, $3.es_direccion?0:1);
   $$.es_direccion = 0;
   $$.tipo = ENTERO;
 
@@ -667,9 +674,9 @@ exp: exp TOK_MAS exp {
     if (UsoGlobal($1.nombre) == NULL) {
       /* Estamos en una funcion y la variable es local */
       if(simbolo->categoria == PARAMETRO) {
-        escribir_operando_funcion(out, (num_parametros_actual-simbolo->adicional1)+1);
+        escribir_elemento_funcion(out, (num_parametros_actual-simbolo->adicional1)+1);
       } else {
-        escribir_operando_funcion(out, -(simbolo->adicional1+1));
+        escribir_elemento_funcion(out, -(simbolo->adicional1+1));
       }
 
     } else {
@@ -725,7 +732,7 @@ exp: exp TOK_MAS exp {
     }
     es_llamada = 0;
     $$.tipo = simbolo->tipo;
-    llamar_funcion(out, $1.nombre, simbolo->adicional1);
+    llamarFuncion(out, $1.nombre, simbolo->adicional1);
 
     fprintf(yyout, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");}
    ;
@@ -812,7 +819,7 @@ comparacion: exp TOK_IGUAL exp {
               return -1;
             }
             contador_cmp++;
-            menorigual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
+            menor_igual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
            | exp TOK_MAYORIGUAL exp {
             if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -820,7 +827,7 @@ comparacion: exp TOK_IGUAL exp {
               return -1;
             }
 	    contador_cmp++;
-            mayorigual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
+            mayor_igual(out, $1.es_direccion?0:1, $3.es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
            | exp TOK_MENOR exp {
             if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -856,7 +863,7 @@ comparacion: exp TOK_IGUAL exp {fprintf(yyout, ";R93:\t<comparacion> ::= <exp> =
 constante: constante_logica {
 		fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");
 		$$.tipo = $1.tipo;
-    $		$$.es_direccion = $1.es_direccion;
+    		$$.es_direccion = $1.es_direccion;
 		strcpy($$.nombre, $1.nombre);
 		}
 	| constante_entera {
@@ -884,7 +891,7 @@ constante_logica: TOK_TRUE {
                    	$$.es_direccion = 0;
 			strcpy($$.nombre,"0");
 			fprintf(yyout, ";escribir_operando\n");
-                    	escribir_operando( out, "0" , 0 )
+                    	escribir_operando(yyout, "0" , 0 )
 			}
 ;
 
@@ -903,7 +910,7 @@ constante_entera: TOK_CONSTANTE_ENTERA {
 
 	sprintf( buff, "%d", $$.valor_entero );
 					fprintf(yyout, ";escribir_operando\n");
-                    escribir_operando( out, buff , 0 );
+                    escribir_operando(yyout, buff , 0 );
 
 
 	}
@@ -943,10 +950,11 @@ identificador: TOK_IDENTIFICADOR {
 
 
     fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
-             ;
+;
+             
 
 /*
-escribirTabla: { /* Escribir tabla de simbolos a nasm */ escribir_segmento_codigo(out); }
+escribirTabla: { /* Escribir tabla de simbolos a nasm  escribir_segmento_codigo(out); }*/
 
  escribirMain: { escribir_inicio_main(out);}
 %%
