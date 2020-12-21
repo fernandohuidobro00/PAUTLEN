@@ -564,10 +564,10 @@ static const yytype_uint16 yyrline[] =
      191,   197,   202,   210,   223,   227,   235,   238,   245,   272,
      286,   344,   349,   355,   359,   366,   389,   393,   399,   403,
      409,   413,   419,   420,   421,   422,   427,   428,   432,   465,
-     482,   509,   510,   539,   545,   552,   564,   581,   589,   602,
-     614,   625,   637,   648,   658,   668,   679,   690,   721,   727,
-     732,   738,   742,   780,   792,   795,   808,   812,   819,   830,
-     839,   847,   855,   863,   886,   892,   901,   911,   922,   943
+     482,   509,   510,   539,   545,   552,   564,   582,   590,   603,
+     616,   627,   639,   650,   660,   670,   681,   692,   723,   729,
+     734,   740,   744,   782,   794,   797,   810,   814,   821,   832,
+     841,   849,   857,   865,   888,   894,   903,   913,   924,   945
 };
 #endif
 
@@ -1926,23 +1926,24 @@ yyreduce:
       fprintf(ERR_OUT, "*Error semantico en lin %ld: Acceso a variable no declarada (%s).\n", linea, (yyvsp[0].atributos).lexema);
       return -1;
     }
+    fprintf(ERR_OUT,"%s",simbolo->lexema);
     leer(yyout, (yyvsp[0].atributos).lexema, simbolo->tipo);
     fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");
 }
-#line 1933 "y.tab.c" /* yacc.c:1646  */
+#line 1934 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 581 "alfa.y" /* yacc.c:1646  */
+#line 582 "alfa.y" /* yacc.c:1646  */
     {
 			escribir(yyout, !((yyvsp[0].atributos).es_direccion), ((yyvsp[0].atributos).tipo));
 			fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");
 			}
-#line 1942 "y.tab.c" /* yacc.c:1646  */
+#line 1943 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 589 "alfa.y" /* yacc.c:1646  */
+#line 590 "alfa.y" /* yacc.c:1646  */
     {
   if(es_funcion==0) {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Sentencia de retorno fuera del cuerpo de una funcion.\n", linea);
@@ -1953,13 +1954,14 @@ yyreduce:
   retornarFuncion(yyout, (yyvsp[0].atributos).es_direccion);
   fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");
 	}
-#line 1957 "y.tab.c" /* yacc.c:1646  */
+#line 1958 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 602 "alfa.y" /* yacc.c:1646  */
+#line 603 "alfa.y" /* yacc.c:1646  */
     {
   if((yyvsp[-2].atributos).tipo!=ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
+    printf("%d",(yyvsp[-2].atributos).tipo);
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
     return -1;
   }
@@ -1969,11 +1971,11 @@ yyreduce:
 
   fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");
 }
-#line 1973 "y.tab.c" /* yacc.c:1646  */
+#line 1975 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 614 "alfa.y" /* yacc.c:1646  */
+#line 616 "alfa.y" /* yacc.c:1646  */
     {
   if((yyvsp[-2].atributos).tipo!=ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {    /* no podemos restar no enteros */
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
@@ -1984,11 +1986,11 @@ yyreduce:
   (yyval.atributos).es_direccion = 0;
     fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n");
 }
-#line 1988 "y.tab.c" /* yacc.c:1646  */
+#line 1990 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 625 "alfa.y" /* yacc.c:1646  */
+#line 627 "alfa.y" /* yacc.c:1646  */
     {
   if((yyvsp[-2].atributos).tipo!=ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
     /** ERROR **/
@@ -2000,11 +2002,11 @@ yyreduce:
   (yyval.atributos).es_direccion = 0;
     fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n");
 }
-#line 2004 "y.tab.c" /* yacc.c:1646  */
+#line 2006 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 637 "alfa.y" /* yacc.c:1646  */
+#line 639 "alfa.y" /* yacc.c:1646  */
     {   /*MULTIPLICAR*/
   if((yyvsp[-2].atributos).tipo!=ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
@@ -2015,11 +2017,11 @@ yyreduce:
   (yyval.atributos).es_direccion = 0;
     fprintf(yyout, ";R75:\t<exp> ::= <exp> * <exp>\n");
 }
-#line 2019 "y.tab.c" /* yacc.c:1646  */
+#line 2021 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 648 "alfa.y" /* yacc.c:1646  */
+#line 650 "alfa.y" /* yacc.c:1646  */
     {
     if((yyvsp[0].atributos).tipo!=ENTERO) {
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
@@ -2030,11 +2032,11 @@ yyreduce:
     (yyval.atributos).es_direccion = 0;
     fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n");
 }
-#line 2034 "y.tab.c" /* yacc.c:1646  */
+#line 2036 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 658 "alfa.y" /* yacc.c:1646  */
+#line 660 "alfa.y" /* yacc.c:1646  */
     {
     if((yyvsp[-2].atributos).tipo!=BOOLEANO || (yyvsp[0].atributos).tipo != BOOLEANO) {    /*AND solo booleanos*/
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion logica con operandos int.\n", linea);
@@ -2045,11 +2047,11 @@ yyreduce:
     (yyval.atributos).es_direccion = 0;
     fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n");
 }
-#line 2049 "y.tab.c" /* yacc.c:1646  */
+#line 2051 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 668 "alfa.y" /* yacc.c:1646  */
+#line 670 "alfa.y" /* yacc.c:1646  */
     {
     if((yyvsp[-2].atributos).tipo!=BOOLEANO || (yyvsp[0].atributos).tipo != BOOLEANO) {
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion logica con operandos int.\n", linea);
@@ -2061,11 +2063,11 @@ yyreduce:
     fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n");
     fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n");
   }
-#line 2065 "y.tab.c" /* yacc.c:1646  */
+#line 2067 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 679 "alfa.y" /* yacc.c:1646  */
+#line 681 "alfa.y" /* yacc.c:1646  */
     {
     if((yyvsp[0].atributos).tipo!=BOOLEANO) {
       fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion logica con operandos int.\n", linea);
@@ -2077,11 +2079,11 @@ yyreduce:
     (yyval.atributos).es_direccion = 0;
     fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n");
 }
-#line 2081 "y.tab.c" /* yacc.c:1646  */
+#line 2083 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 690 "alfa.y" /* yacc.c:1646  */
+#line 692 "alfa.y" /* yacc.c:1646  */
     {
     strcpy((yyval.atributos).lexema, (yyvsp[0].atributos).lexema);
     simbolo = UsoLocal((yyvsp[0].atributos).lexema);
@@ -2113,52 +2115,52 @@ yyreduce:
     fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");
 
   }
-#line 2117 "y.tab.c" /* yacc.c:1646  */
+#line 2119 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 721 "alfa.y" /* yacc.c:1646  */
+#line 723 "alfa.y" /* yacc.c:1646  */
     {
     (yyval.atributos).tipo =(yyvsp[0].atributos).tipo;
     (yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion;
     escribir_operando(yyout, (yyvsp[0].atributos).lexema, 0);
     fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");
   }
-#line 2128 "y.tab.c" /* yacc.c:1646  */
+#line 2130 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 727 "alfa.y" /* yacc.c:1646  */
+#line 729 "alfa.y" /* yacc.c:1646  */
     {
     (yyval.atributos).tipo =(yyvsp[-1].atributos).tipo;
     (yyval.atributos).es_direccion = (yyvsp[-1].atributos).es_direccion;
     fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");
   }
-#line 2138 "y.tab.c" /* yacc.c:1646  */
+#line 2140 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 732 "alfa.y" /* yacc.c:1646  */
+#line 734 "alfa.y" /* yacc.c:1646  */
     {  /*comparaciones booleanas*/
     (yyval.atributos).tipo =BOOLEANO;
     (yyval.atributos).es_direccion = 0;
     fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n");
     fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n");
   }
-#line 2149 "y.tab.c" /* yacc.c:1646  */
+#line 2151 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 738 "alfa.y" /* yacc.c:1646  */
+#line 740 "alfa.y" /* yacc.c:1646  */
     {
     fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n");
 
   }
-#line 2158 "y.tab.c" /* yacc.c:1646  */
+#line 2160 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 742 "alfa.y" /* yacc.c:1646  */
+#line 744 "alfa.y" /* yacc.c:1646  */
     {
     simbolo = UsoLocal((yyvsp[-2].atributos).lexema);
     if(simbolo == NULL) {
@@ -2178,11 +2180,11 @@ yyreduce:
     llamarFuncion(yyout, (yyvsp[-2].atributos).lexema, simbolo->valor1);
 
     fprintf(yyout, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");}
-#line 2182 "y.tab.c" /* yacc.c:1646  */
+#line 2184 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 780 "alfa.y" /* yacc.c:1646  */
+#line 782 "alfa.y" /* yacc.c:1646  */
     {
   if(es_llamada == 1) {
     fprintf(ERR_OUT, "****Error semantico en lin %ld: No esta permitido el uso de llamadas a funciones como parametros de otras funciones.\n", linea);
@@ -2192,45 +2194,45 @@ yyreduce:
   parametros = 0;
   strcpy((yyval.atributos).lexema, (yyvsp[-1].atributos).lexema);
 }
-#line 2196 "y.tab.c" /* yacc.c:1646  */
+#line 2198 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 792 "alfa.y" /* yacc.c:1646  */
+#line 794 "alfa.y" /* yacc.c:1646  */
     {
 				fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");
 				}
-#line 2204 "y.tab.c" /* yacc.c:1646  */
+#line 2206 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 795 "alfa.y" /* yacc.c:1646  */
+#line 797 "alfa.y" /* yacc.c:1646  */
     {
 		fprintf(yyout, ";R90:\t<lista_expresiones> ::=\n");
 		es_llamada = 0;
 		}
-#line 2213 "y.tab.c" /* yacc.c:1646  */
+#line 2215 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 808 "alfa.y" /* yacc.c:1646  */
+#line 810 "alfa.y" /* yacc.c:1646  */
     {
 					fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");
 					parametros++;
 					}
-#line 2222 "y.tab.c" /* yacc.c:1646  */
+#line 2224 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 812 "alfa.y" /* yacc.c:1646  */
+#line 814 "alfa.y" /* yacc.c:1646  */
     {
 						fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::=\n");
 						}
-#line 2230 "y.tab.c" /* yacc.c:1646  */
+#line 2232 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 819 "alfa.y" /* yacc.c:1646  */
+#line 821 "alfa.y" /* yacc.c:1646  */
     {
 	  if((yyvsp[-2].atributos).tipo != ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
 	    fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
@@ -2242,11 +2244,11 @@ yyreduce:
 	  $$.es_direccion = 0;*/
 	  fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
 	}
-#line 2246 "y.tab.c" /* yacc.c:1646  */
+#line 2248 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 830 "alfa.y" /* yacc.c:1646  */
+#line 832 "alfa.y" /* yacc.c:1646  */
     {
             if((yyvsp[-2].atributos).tipo != ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
@@ -2256,11 +2258,11 @@ yyreduce:
             distinto(yyout, (yyvsp[-2].atributos).es_direccion?0:1, (yyvsp[0].atributos).es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n");
             }
-#line 2260 "y.tab.c" /* yacc.c:1646  */
+#line 2262 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 839 "alfa.y" /* yacc.c:1646  */
+#line 841 "alfa.y" /* yacc.c:1646  */
     {
             if((yyvsp[-2].atributos).tipo != ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
@@ -2269,11 +2271,11 @@ yyreduce:
             contador_cmp++;
             menor_igual(yyout, (yyvsp[-2].atributos).es_direccion?0:1, (yyvsp[0].atributos).es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
-#line 2273 "y.tab.c" /* yacc.c:1646  */
+#line 2275 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 847 "alfa.y" /* yacc.c:1646  */
+#line 849 "alfa.y" /* yacc.c:1646  */
     {
             if((yyvsp[-2].atributos).tipo != ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
@@ -2282,11 +2284,11 @@ yyreduce:
 	    contador_cmp++;
             mayor_igual(yyout, (yyvsp[-2].atributos).es_direccion?0:1, (yyvsp[0].atributos).es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
-#line 2286 "y.tab.c" /* yacc.c:1646  */
+#line 2288 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 855 "alfa.y" /* yacc.c:1646  */
+#line 857 "alfa.y" /* yacc.c:1646  */
     {
             if((yyvsp[-2].atributos).tipo != ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
@@ -2295,11 +2297,11 @@ yyreduce:
             contador_cmp++;
             menor(yyout, (yyvsp[-2].atributos).es_direccion?0:1, (yyvsp[0].atributos).es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
-#line 2299 "y.tab.c" /* yacc.c:1646  */
+#line 2301 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 863 "alfa.y" /* yacc.c:1646  */
+#line 865 "alfa.y" /* yacc.c:1646  */
     {
             if((yyvsp[-2].atributos).tipo != ENTERO || (yyvsp[0].atributos).tipo != ENTERO) {
               fprintf(ERR_OUT, "****Error semantico en lin %ld: Comparacion con operandos boolean.\n", linea);
@@ -2308,33 +2310,33 @@ yyreduce:
             contador_cmp++;
             mayor(yyout, (yyvsp[-2].atributos).es_direccion?0:1, (yyvsp[0].atributos).es_direccion?0:1, contador_cmp++);
             fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
-#line 2312 "y.tab.c" /* yacc.c:1646  */
+#line 2314 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 886 "alfa.y" /* yacc.c:1646  */
+#line 888 "alfa.y" /* yacc.c:1646  */
     {
 		fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");
 		(yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
     		(yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion;
 		strcpy((yyval.atributos).lexema, (yyvsp[0].atributos).lexema);
 		}
-#line 2323 "y.tab.c" /* yacc.c:1646  */
+#line 2325 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 892 "alfa.y" /* yacc.c:1646  */
+#line 894 "alfa.y" /* yacc.c:1646  */
     {
 		fprintf(yyout, ";R100:\t<constante> ::= <constante_entera>\n");
 		(yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
     		(yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion;
 		strcpy((yyval.atributos).lexema, (yyvsp[0].atributos).lexema);
 		}
-#line 2334 "y.tab.c" /* yacc.c:1646  */
+#line 2336 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 901 "alfa.y" /* yacc.c:1646  */
+#line 903 "alfa.y" /* yacc.c:1646  */
     {
 		fprintf(yyout, ";R102:\t<constante_logica> ::= true\n");
 		(yyval.atributos).tipo = BOOLEANO;
@@ -2344,11 +2346,11 @@ yyreduce:
 		fprintf(yyout, ";escribir_operando\n");
                 escribir_operando( yyout, "1" , 0 );
 		}
-#line 2348 "y.tab.c" /* yacc.c:1646  */
+#line 2350 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 911 "alfa.y" /* yacc.c:1646  */
+#line 913 "alfa.y" /* yacc.c:1646  */
     {
 			fprintf(yyout, ";R103:\t<constante_logica> ::= false\n");
 			(yyval.atributos).tipo = BOOLEANO;
@@ -2357,11 +2359,11 @@ yyreduce:
 			fprintf(yyout, ";escribir_operando\n");
                     	escribir_operando(yyout, "0" , 0 );
 			}
-#line 2361 "y.tab.c" /* yacc.c:1646  */
+#line 2363 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 922 "alfa.y" /* yacc.c:1646  */
+#line 924 "alfa.y" /* yacc.c:1646  */
     {
 
 	fprintf(yyout, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");
@@ -2380,11 +2382,11 @@ yyreduce:
 
 
 	}
-#line 2384 "y.tab.c" /* yacc.c:1646  */
+#line 2386 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 943 "alfa.y" /* yacc.c:1646  */
+#line 945 "alfa.y" /* yacc.c:1646  */
     {
     simbolo = UsoLocal((yyvsp[0].atributos).lexema);
     if((simbolo != NULL && !es_funcion) || (simbolo != NULL && EsLocal((yyvsp[0].atributos).lexema)) ) {
@@ -2418,11 +2420,11 @@ yyreduce:
 
 
     fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
-#line 2422 "y.tab.c" /* yacc.c:1646  */
+#line 2424 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2426 "y.tab.c" /* yacc.c:1646  */
+#line 2428 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2650,7 +2652,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 983 "alfa.y" /* yacc.c:1906  */
+#line 985 "alfa.y" /* yacc.c:1906  */
 
 
 void yyerror (char *s){

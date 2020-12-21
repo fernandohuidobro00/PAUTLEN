@@ -567,6 +567,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {
       fprintf(ERR_OUT, "*Error semantico en lin %ld: Acceso a variable no declarada (%s).\n", linea, $2.lexema);
       return -1;
     }
+    fprintf(ERR_OUT,"%s",simbolo->lexema);
     leer(yyout, $2.lexema, simbolo->tipo);
     fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");
 };
@@ -601,6 +602,7 @@ retorno_funcion: TOK_RETURN exp {
 /*REGLA PR 72,73,74,75,76,77,78,79,80,81,82,83,85,88*/
 exp: exp TOK_MAS exp {
   if($1.tipo!=ENTERO || $3.tipo != ENTERO) {
+    printf("%d",$1.tipo);
     fprintf(ERR_OUT, "****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", linea);
     return -1;
   }
