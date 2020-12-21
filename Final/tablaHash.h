@@ -13,26 +13,26 @@
 
 /*Categoria del elemento*/
 typedef enum {
-    VARIABLE=1,
+    VARIABLE,
     PARAMETRO,
     FUNCION
 }CATEGORIA;
 
 /*Tipo variable que almacena un unico valor o un vector que almacena una serie de elementos */
 typedef enum {
-    BOOLEAN=1,
-    INT
+    BOOLEAN,
+    ENTEROS
 }TIPO;
 
 /*Tipo del elemento si es una variable o paramentro, si es un vector es el tipo que se alamcena en este, si es una funcion se refiere al tipo de retorno*/
 typedef enum {
-    ESCALAR=1,
+    ESCALAR,
     VECTOR
 }CLASE;
 
 /*ESTADO CORRECTO Y ERRONEO*/
 typedef enum {
-    ERROR=0,
+    ERROR,
     OK
 } STATUS;
 

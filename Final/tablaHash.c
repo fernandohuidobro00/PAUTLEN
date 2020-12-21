@@ -337,7 +337,7 @@ int i=0;
             printf(" category=FUNCION");
         }
 
-        if(aux->tipo == INT){
+        if(aux->tipo == ENTEROS){
             printf(" type=INT");
         }else if(aux->tipo == BOOLEAN){
             printf(" type=BOOLEAN");
@@ -368,7 +368,7 @@ int i=0;
                 printf(" category=FUNCION");
             }
 
-            if(aux->tipo == INT){
+            if(aux->tipo == ENTEROS){
                 printf(" type=INT");
             }else if(aux->tipo == BOOLEAN){
                 printf(" type=BOOLEAN");

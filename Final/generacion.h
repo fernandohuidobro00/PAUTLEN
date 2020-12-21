@@ -30,6 +30,8 @@ void asignar(FILE* fpasm, char* nombre, int es_variable);
 
 void asignar_local(FILE * fpasm, int n_local, int es_variable);
 
+void asignar_vector(FILE* fpasm, int es_variable);
+
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2);
 
 

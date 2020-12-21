@@ -21,28 +21,17 @@ typedef struct {
   int etiqueta;
 } tipo_atributos;
 
-/*
-typedef struct {
-  char lexema[MAX_LONG_ID+1];
-  int tipo;
-  int valor_entero;
-  BOOL valor_boolean;
-  int es_direccion;
-  int etiqueta;
-} tipo_atributos;
-*/
-
-
-/* CLASES */
-#define ESCALAR 1
+/* CATEGORIA */
+#define VARIABLE 1
 #define PARAMETRO 2
-#define VECTOR 3
+#define FUNCION 3
 
-/* TIPOS */
-#define INT 1
-#define BOOLEAN 2
+/* CLASE */
+#define ESCALAR 1
+#define VECTOR 2
 
-
-
+/* TIPO */
+#define BOOLEAN 1
+#define INT 2
 
 #endif

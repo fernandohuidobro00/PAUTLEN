@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "alfa.h"
-#include "y.tab.h"
+/*#include "y.tab.h"*/
 
 extern FILE *yyin;
 extern FILE *yyout;
