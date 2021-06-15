@@ -93,6 +93,7 @@ INFO_SIMBOLO * UsoLocal(const char * id){
 
 }
 
+
 STATUS DeclararFuncion(const char * id,INFO_SIMBOLO *is){
 
     

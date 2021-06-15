@@ -49,7 +49,9 @@
 
 	/*TABLA_HASH tablaGlobal = NULL;
 	TABLA_HASH tablaLocal = NULL;*/
-	/*tablaSimbolos tabla;*/	/* Tabla de simbolos*/
+
+	tablaSimbolos tabla;	/* Tabla de simbolos*/
+	tabla=CrearTablaGlobal();
 %}
 
 %union{
@@ -101,6 +103,7 @@
 %token <atributos> TOK_IDENTIFICADOR
 
 
+%type <atributos> condicional
 %type <atributos> comparacion
 %type <atributos> elemento_vector
 %type <atributos> exp
@@ -133,7 +136,7 @@
 %start programa
 
 %%
-programa: escritura_inicial TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA {
+programa:   TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA {
 				fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
 				fprintf( yyout, ";escribir_fin\n" );
        				escribir_fin( yyout );
@@ -178,15 +181,20 @@ declaracion: clase identificadores TOK_PUNTOYCOMA {
 					}
 ;
 
-/*REGLA PR 5*/
+/*REGLA PR 5,7*/
 clase: clase_escalar {
-			fprintf(yyout, ";R5:\t<clase> ::= <clase_escalar>\n");
+
 			clase_actual = ESCALAR;
+			fprintf(yyout, ";R5:\t<clase> ::= <clase_escalar>\n");
 			}
+;
 
 
-			| clase_vector {fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n");
+clase: clase_vector {
+	
 			clase_actual = VECTOR;
+			clase_vector {fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n");
+			
 			}
 ;
 
@@ -198,14 +206,16 @@ clase_escalar:tipo {
 
 /*REGLA PR 10,11*/
 tipo: TOK_INT {
-				fprintf(yyout, ";R10:\t<tipo> ::= int\n");
 				tipo_actual = INT;
+				fprintf(yyout, ";R10:\t<tipo> ::= int\n");
 				}
+;
 
-				|	TOK_BOOLEAN {
+tipo: TOK_BOOLEAN
+		 	{
+		 			tipo_actual = BOOLEAN;
 					fprintf(yyout, ";R11:\t<tipo> ::= boolean\n");
-					tipo_actual = BOOLEAN;
-					}
+			}
 ;
 
 
@@ -450,10 +460,14 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
         }
       if (UsoGlobal($1.lexema) == NULL) {
         if(simbolo->categoria == PARAMETRO) {
-          asignar_local(yyout, (num_parametros_actual-simbolo->valor1+1), $3.es_direccion?0:1);
+
+          escribirParametro(yyout,simbolo->valor1,num_parametros_actual);
+          #asignar_local(yyout, (num_parametros_actual-simbolo->valor1+1), $3.es_direccion?0:1);
         } else {
-          asignar_local(yyout, -(simbolo->valor1+1), $3.es_direccion?0:1);
+          #asignar_local(yyout, -(simbolo->valor1+1), $3.es_direccion?0:1);
+          escribirVariableLocal(yyout,simbolo->valor1+1);
         }
+                asignarDestinoEnPila(yyout,$3.es_direccion);
 
       } else {
         asignar(yyout, $1.lexema, $3.es_direccion?0:1);
@@ -472,7 +486,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
 			fprintf(yyout, "mov eax, [eax]\n");
 		}
 
-		asignar_vector(yyout, $3.es_direccion?0:1);
+		asignar_vector(yyout, $3.es_direccion);
             fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
           ;
 
@@ -968,6 +982,7 @@ identificador: TOK_IDENTIFICADOR {
       declarar_variable(yyout, $1.lexema, tipo_actual,  insertar.valor1);
 
     }
+
     Declarar($1.lexema, &insertar);
 
 

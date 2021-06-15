@@ -45,6 +45,13 @@ typedef struct  info_simbolo {
     CLASE clase;            /* clase */
     int valor1;    /* valor si escalar, longitud si vector, número de parámetros si función */
     int valor2;    /* posición en llamada a función si parámetro, posición de declaración si variable local de función, número de variables locales si función */
+    int tamanyo;
+    int n_variables_locales;
+    int pos_variable_local;
+    int num_params;
+    int pos_param;
+
+
    /* Lista enlazada con todos los simbolos de la tabla */
 
 } INFO_SIMBOLO;
