@@ -25,6 +25,7 @@ void escribir_fin(FILE* fpasm);
 
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable);
 
+void escribir_operando_array(FILE* fpasm, char* operando, int es_inmediato, int tamano);
 
 void asignar(FILE* fpasm, char* nombre, int es_variable);
 

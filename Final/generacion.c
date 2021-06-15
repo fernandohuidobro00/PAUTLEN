@@ -459,6 +459,21 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
   }
 }
 
+void escribir_operando_array(FILE* fpasm, char* operando, int es_inmediato, int tamano) {
+  fprintf(fpasm, "\tpop dword eax\n");
+  if (es_inmediato == 1) {
+    fprintf(fpasm, "\tmov eax, [eax]\n");
+  }
+  fprintf(fpasm, "\tcmp eax, 0\n");
+  fprintf(fpasm, "\tjl near fin_indice_fuera_rango\n");
+  fprintf(fpasm, "\tcmp eax, %d\n", tamano);
+  fprintf(fpasm, "\tjge near fin_indice_fuera_rango\n");
+
+  fprintf(fpasm, "\tmov dword edx, _%s\n", operando);
+  fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
+  fprintf(fpasm, "\tpush dword eax\n");
+}
+
 
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros) {
   if(!fpasm) {
